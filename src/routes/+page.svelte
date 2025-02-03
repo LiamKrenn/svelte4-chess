@@ -8,6 +8,10 @@
     chess.$on("move", (e) => {
       console.log("Move", e.detail);
     });
+
+    chess.$on("update", () => {
+      console.log("asdf");
+    });
   });
 </script>
 
@@ -17,9 +21,6 @@
     orientation="b"
     ownColor="black"
     engine={new Engine({ depth: 20, moveTime: 1500, color: "w" })}
-    apiStateChangeCallback={(state) => {
-      console.log("API state change", state);
-    }}
     config={{
       events: {
         move: () => {

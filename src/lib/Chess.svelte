@@ -28,6 +28,7 @@
     gameOver: GameOver;
     ready: {};
     uci: string;
+    update: {};
   }>();
 
   let chessground: Chessground;
@@ -131,9 +132,6 @@
   export function playPremove() {
     chessground.playPremove();
   }
-
-  export let apiStateChangeCallback: (api: Api) => void;
-
   /*
    * API Construction
    */
@@ -146,7 +144,7 @@
     inCheck = api.inCheck();
     history = api.history();
     isGameOver = api.isGameOver();
-    apiStateChangeCallback?.(api);
+    dispatch("update");
   }
 
   function promotionCallback(square: Square): Promise<PieceSymbol> {
