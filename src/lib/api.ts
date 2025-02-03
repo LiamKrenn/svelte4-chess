@@ -3,6 +3,7 @@ import { Chess as ChessJS, SQUARES } from "chess.js";
 import type { Square, PieceSymbol, Color, Move as CjsMove } from "chess.js";
 export type { Square, PieceSymbol, Color };
 import type { Engine } from "$lib/engine.js";
+import { Config } from "chessground/config";
 
 export type Move = CjsMove & {
   check: boolean;
@@ -124,6 +125,10 @@ export class Api {
       this.chessJS.get(orig).type === "p" &&
       (dest.charAt(1) == "1" || dest.charAt(1) == "8")
     );
+  }
+
+  set(config: Config) {
+    this.cg.set(config);
   }
 
   // Make a move programmatically

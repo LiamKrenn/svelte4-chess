@@ -77,6 +77,11 @@
     });
   }
 
+  export function moveLan(moveLan: string) {
+    if (!api) throw new Error("component not mounted yet");
+    api.moveLan(moveLan);
+  }
+
   export function move(moveSan: string) {
     if (!api) throw new Error("component not mounted yet");
     console.log("ooppoonennt");
@@ -114,6 +119,11 @@
   export async function playEngineMove(): Promise<void> {
     if (!api) throw new Error("component not mounted yet");
     return api.playEngineMove();
+  }
+
+  export function setConfig(config: Config) {
+    if (!api) throw new Error("component not mounted yet");
+    api.set(config);
   }
 
   export function playPremove() {
@@ -169,7 +179,7 @@
       moveCallback,
       gameOverCallback,
       orientation,
-      engine,
+      engine
     );
     api.init().then(() => {
       // Dispatch ready-event: Simply letting the parent observe when the component is mounted is not enough due to async onMount.
