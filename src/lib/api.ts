@@ -212,7 +212,8 @@ export class Api {
     this.cg.set({
       movable: {
         color: this.ownColor,
-        dests: this.possibleMovesDests(),
+        dests:
+          this.ownColor === cgColor ? this.possibleMovesDests() : new Map(),
         free: false,
       },
     } as Config);

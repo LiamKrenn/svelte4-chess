@@ -15,6 +15,7 @@
   <Chess
     bind:this={chess}
     orientation="b"
+    ownColor="black"
     engine={new Engine({ depth: 20, moveTime: 1500, color: "w" })}
     config={{
       events: {
