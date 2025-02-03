@@ -13,7 +13,7 @@
     "ui",
     "typescript"
   ],
-  "version": "1.1.1",
+  "version": "1.1.0",
   "license": "GPL-3.0",
   "homepage": "https://github.com/LiamKrenn/svelte4-chess",
   "bugs": "https://github.com/LiamKrenn/svelte4-chess/issues",

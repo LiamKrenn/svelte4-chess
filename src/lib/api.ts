@@ -3,7 +3,6 @@ import { Chess as ChessJS, SQUARES } from "chess.js";
 import type { Square, PieceSymbol, Color, Move as CjsMove } from "chess.js";
 export type { Square, PieceSymbol, Color };
 import type { Engine } from "$lib/engine.js";
-import { Config } from "chessground/config";
 
 export type Move = CjsMove & {
   check: boolean;
@@ -24,7 +23,6 @@ export class Api {
   private chessJS: ChessJS;
   private gameIsOver = false;
   private initialised = false;
-
   constructor(
     private cg: Chessground,
     fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
@@ -35,14 +33,13 @@ export class Api {
     private moveCallback: (move: Move) => void = (m) => {}, // called after move
     private gameOverCallback: (gameOver: GameOver) => void = (go) => {}, // called after game-ending move
     private _orientation: Color = "w",
-    private engine: Engine | undefined = undefined,
-    private config: Config = {
+    private engine: Engine | undefined = undefined
+  ) {
+    this.cg.set({
       fen,
       orientation: Api._colorToCgColor(_orientation),
       movable: { free: false },
-    }
-  ) {
-    this.cg.set(config);
+    });
     this.chessJS = new ChessJS(fen);
   }
 
@@ -66,31 +63,27 @@ export class Api {
       engineStopSearchPromise = this.engine.stopSearch();
     this.chessJS.load(fen);
     this._checkForGameOver();
-    if (!this.config.animation) {
-      this.config.animation = {};
-    }
-    this.config.animation.enabled = false;
-    this.cg.set(this.config);
+    this.cg.set({ animation: { enabled: false } });
     const cgColor = Api._colorToCgColor(this.chessJS.turn());
     const enginePlaysNextMove = this._enginePlaysNextMove();
-    this.config.fen = fen;
-    this.config.turnColor = cgColor;
-    this.config.check = this.chessJS.inCheck();
-    this.config.lastMove = undefined;
-    this.config.selected = undefined;
-    this.config.movable = {
-      free: false,
-      color: cgColor,
-      dests: enginePlaysNextMove ? new Map() : this.possibleMovesDests(),
-      events: {
-        after: (orig, dest) => {
-          this._chessgroundMoveCallback(orig, dest);
+    this.cg.set({
+      fen: fen,
+      turnColor: cgColor,
+      check: this.chessJS.inCheck(),
+      lastMove: undefined,
+      selected: undefined,
+      movable: {
+        free: false,
+        color: cgColor,
+        dests: enginePlaysNextMove ? new Map() : this.possibleMovesDests(),
+        events: {
+          after: (orig, dest) => {
+            this._chessgroundMoveCallback(orig, dest);
+          },
         },
       },
-    };
-    this.cg.set(this.config);
-    this.config.animation.enabled = true;
-    this.cg.set(this.config);
+    });
+    this.cg.set({ animation: { enabled: true } });
     if (this.initialised && enginePlaysNextMove) {
       // Play immediate engine move, but wait until stopSearch has finished
       if (engineStopSearchPromise) {
@@ -146,8 +139,7 @@ export class Api {
     const cjsMove = this.chessJS.move(moveSanOrObj); // throws on illegal move
     const move = Api._cjsMoveToMove(cjsMove);
     this.cg.move(move.from, move.to);
-    this.config.turnColor = Api._colorToCgColor(this.chessJS.turn());
-    this.cg.set(this.config);
+    this.cg.set({ turnColor: Api._colorToCgColor(this.chessJS.turn()) });
     this._postMoveAdmin(move);
   }
   // Make a move programmatically from long algebraic notation (LAN) string,
@@ -168,11 +160,11 @@ export class Api {
 
     // reload FEN after en-passant or promotion. TODO make promotion smoother
     if (move.flags.includes("e") || move.flags.includes("p")) {
-      this.config.fen = this.chessJS.fen();
+      this.cg.set({ fen: this.chessJS.fen() });
     }
     // highlight king if in check
     if (move.check) {
-      this.config.check = true;
+      this.cg.set({ check: true });
     }
     // dispatch move event
     this.moveCallback(move);
@@ -180,14 +172,10 @@ export class Api {
     this._checkForGameOver();
     // set legal moves
     if (enginePlaysNextMove) {
-      if (!this.config.movable) {
-        this.config.movable = {};
-      }
-      this.config.movable.dests = new Map(); // no legal moves
+      this.cg.set({ movable: { dests: new Map() } }); // no legal moves
     } else {
       this._updateChessgroundWithPossibleMoves();
     }
-    this.cg.set(this.config);
     // update state props
     this.stateChangeCallback(this);
 
@@ -215,13 +203,13 @@ export class Api {
 
   private _updateChessgroundWithPossibleMoves() {
     const cgColor = Api._colorToCgColor(this.chessJS.turn());
-    this.config.turnColor = cgColor;
-    if (!this.config.movable) {
-      this.config.movable = {};
-    }
-    this.config.movable.color = cgColor;
-    this.config.movable.dests = this.possibleMovesDests();
-    this.cg.set(this.config);
+    this.cg.set({
+      turnColor: cgColor,
+      movable: {
+        color: cgColor,
+        dests: this.possibleMovesDests(),
+      },
+    });
   }
   private _checkForGameOver() {
     if (this.chessJS.isCheckmate()) {
@@ -276,11 +264,12 @@ export class Api {
     const cjsMove = this.chessJS.undo();
     const move = cjsMove ? Api._cjsMoveToMove(cjsMove) : null;
     const turnColor = Api._colorToCgColor(this.chessJS.turn());
-    this.config.fen = this.chessJS.fen();
-    this.config.check = this.chessJS.inCheck() ? turnColor : undefined;
-    this.config.turnColor = turnColor;
-    this.config.lastMove = undefined;
-    this.cg.set(this.config);
+    this.cg.set({
+      fen: this.chessJS.fen(),
+      check: this.chessJS.inCheck() ? turnColor : undefined,
+      turnColor: turnColor,
+      lastMove: undefined,
+    });
     this.gameIsOver = false;
     this._updateChessgroundWithPossibleMoves();
     this.stateChangeCallback(this);
@@ -290,8 +279,9 @@ export class Api {
   // Board orientation
   toggleOrientation(): void {
     this._orientation = this._orientation === "w" ? "b" : "w";
-    this.config.orientation = Api._colorToCgColor(this._orientation);
-    this.cg.set(this.config);
+    this.cg.set({
+      orientation: Api._colorToCgColor(this._orientation),
+    });
     this.stateChangeCallback(this);
   }
   orientation(): Color {
