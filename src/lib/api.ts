@@ -213,8 +213,9 @@ export class Api {
       movable: {
         color: cgColor,
         dests: this.possibleMovesDests(),
+        free: false,
       },
-    });
+    } as Config);
   }
   private _checkForGameOver() {
     if (this.chessJS.isCheckmate()) {

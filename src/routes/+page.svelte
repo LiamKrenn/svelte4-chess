@@ -1,7 +1,14 @@
 <script lang="ts">
   import Chess, { Engine } from "$lib/Chess.svelte";
+  import { onMount } from "svelte";
 
   let chess: Chess;
+
+  onMount(() => {
+    chess.$on("move", (e) => {
+      console.log("Move", e.detail);
+    });
+  });
 </script>
 
 <div style="max-width:512px;margin:0 auto;">
