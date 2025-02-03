@@ -77,6 +77,8 @@
     });
   }
 
+  export let ownColor: "white" | "black" = "white";
+
   export function setConfig(config: Config) {
     if (!api) throw new Error("component not mounted yet");
     api.set(config);
@@ -179,7 +181,7 @@
       moveCallback,
       gameOverCallback,
       orientation,
-      "black",
+      ownColor,
       engine,
     );
     api.init().then(() => {
