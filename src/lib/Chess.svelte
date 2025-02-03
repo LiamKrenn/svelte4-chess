@@ -77,6 +77,11 @@
     });
   }
 
+  export function setConfig(config: Config) {
+    if (!api) throw new Error("component not mounted yet");
+    api.set(config);
+  }
+
   export function moveLan(moveLan: string) {
     if (!api) throw new Error("component not mounted yet");
     api.moveLan(moveLan);
@@ -119,11 +124,6 @@
   export async function playEngineMove(): Promise<void> {
     if (!api) throw new Error("component not mounted yet");
     return api.playEngineMove();
-  }
-
-  export function setConfig(config: Config) {
-    if (!api) throw new Error("component not mounted yet");
-    api.set(config);
   }
 
   export function playPremove() {
