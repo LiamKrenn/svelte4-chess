@@ -78,6 +78,12 @@
     });
   }
 
+  export function setOwnColor(color: "white" | "black") {
+    if (!api) throw new Error("component not mounted yet");
+    ownColor = color;
+    api.setOwnColor(color);
+  }
+
   export let ownColor: "white" | "black" = "white";
 
   export function setConfig(config: Config) {

@@ -45,6 +45,10 @@ export class Api {
     this.chessJS = new ChessJS(fen);
   }
 
+  setOwnColor(color: "white" | "black") {
+    this.ownColor = color;
+  }
+
   async init() {
     if (this.engine) {
       await this.engine.init();
