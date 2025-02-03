@@ -179,7 +179,8 @@
       moveCallback,
       gameOverCallback,
       orientation,
-      engine
+      "black",
+      engine,
     );
     api.init().then(() => {
       // Dispatch ready-event: Simply letting the parent observe when the component is mounted is not enough due to async onMount.

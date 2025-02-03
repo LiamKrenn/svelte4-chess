@@ -76,7 +76,7 @@ export class Api {
       selected: undefined,
       movable: {
         free: false,
-        color: this.ownColor,
+        color: cgColor,
         dests: enginePlaysNextMove ? new Map() : this.possibleMovesDests(),
         events: {
           after: (orig, dest) => {
@@ -209,15 +209,13 @@ export class Api {
 
   private _updateChessgroundWithPossibleMoves() {
     const cgColor = Api._colorToCgColor(this.chessJS.turn());
-    if (cgColor === this.ownColor) {
-      this.cg.set({
-        movable: {
-          color: cgColor,
-          dests: this.possibleMovesDests(),
-          free: false,
-        },
-      } as Config);
-    }
+    this.cg.set({
+      movable: {
+        color: this.ownColor,
+        dests: this.possibleMovesDests(),
+        free: false,
+      },
+    } as Config);
   }
   private _checkForGameOver() {
     if (this.chessJS.isCheckmate()) {
