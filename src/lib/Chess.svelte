@@ -132,6 +132,8 @@
     chessground.playPremove();
   }
 
+  export let apiStateChangeCallback: (api: Api) => void;
+
   /*
    * API Construction
    */
@@ -144,6 +146,7 @@
     inCheck = api.inCheck();
     history = api.history();
     isGameOver = api.isGameOver();
+    apiStateChangeCallback?.(api);
   }
 
   function promotionCallback(square: Square): Promise<PieceSymbol> {

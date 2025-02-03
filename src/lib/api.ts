@@ -210,6 +210,7 @@ export class Api {
   private _updateChessgroundWithPossibleMoves() {
     const cgColor = Api._colorToCgColor(this.chessJS.turn());
     this.cg.set({
+      turnColor: cgColor,
       movable: {
         color: this.ownColor,
         dests:

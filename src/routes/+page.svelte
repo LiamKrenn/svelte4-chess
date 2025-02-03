@@ -17,6 +17,9 @@
     orientation="b"
     ownColor="black"
     engine={new Engine({ depth: 20, moveTime: 1500, color: "w" })}
+    apiStateChangeCallback={(state) => {
+      console.log("API state change", state);
+    }}
     config={{
       events: {
         move: () => {
