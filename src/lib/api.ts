@@ -3,7 +3,7 @@ import { Chess as ChessJS, SQUARES } from "chess.js";
 import type { Square, PieceSymbol, Color, Move as CjsMove } from "chess.js";
 export type { Square, PieceSymbol, Color };
 import type { Engine } from "$lib/engine.js";
-import { Config } from "chessground/config";
+import { type Config } from "chessground/config";
 
 export type Move = CjsMove & {
   check: boolean;
@@ -34,6 +34,7 @@ export class Api {
     private moveCallback: (move: Move) => void = (m) => {}, // called after move
     private gameOverCallback: (gameOver: GameOver) => void = (go) => {}, // called after game-ending move
     private _orientation: Color = "w",
+    private ownColor: "white" | "black" = "white",
     private engine: Engine | undefined = undefined
   ) {
     this.cg.set({
@@ -75,7 +76,7 @@ export class Api {
       selected: undefined,
       movable: {
         free: false,
-        color: cgColor,
+        color: this.ownColor,
         dests: enginePlaysNextMove ? new Map() : this.possibleMovesDests(),
         events: {
           after: (orig, dest) => {
@@ -208,14 +209,15 @@ export class Api {
 
   private _updateChessgroundWithPossibleMoves() {
     const cgColor = Api._colorToCgColor(this.chessJS.turn());
-    this.cg.set({
-      turnColor: cgColor,
-      movable: {
-        color: cgColor,
-        dests: this.possibleMovesDests(),
-        free: false,
-      },
-    } as Config);
+    if (cgColor === this.ownColor) {
+      this.cg.set({
+        movable: {
+          color: cgColor,
+          dests: this.possibleMovesDests(),
+          free: false,
+        },
+      } as Config);
+    }
   }
   private _checkForGameOver() {
     if (this.chessJS.isCheckmate()) {
